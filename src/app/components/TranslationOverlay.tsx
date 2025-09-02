@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 // Define types
 interface Bbox { x0: number; y0: number; x1: number; y1: number; }
@@ -38,7 +39,7 @@ export default function TranslationOverlay({ imageSrc, translatedBlocks, origina
 
   return (
     <div ref={containerRef} style={{ position: 'relative', display: 'inline-block', lineHeight: 1, width: '100%' }}>
-      <img src={imageSrc} alt="Translated Comic" style={{ maxWidth: '100%', display: 'block', width: '100%' }} />
+      <Image src={imageSrc} alt="Translated Comic" style={{ maxWidth: '100%', display: 'block', width: '100%' }} />
       {translatedBlocks.map((block, index) => {
         // Calculate responsive font size, with a minimum to prevent it from being unreadable
         const responsiveFontSize = Math.max(8, 14 * scale);
@@ -64,6 +65,7 @@ export default function TranslationOverlay({ imageSrc, translatedBlocks, origina
               textAlign: 'center',
               overflow: 'hidden',
               boxSizing: 'border-box', // Ensure padding is included in width/height
+              fontFamily: "Poppins, sans-serif",
             }}
           >
             {block.translation}
