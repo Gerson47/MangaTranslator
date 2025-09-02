@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       role: 'system',
       parts: [
         {
-          text: `You are an expert manga translator. Translate the following Japanese text blocks into natural-sounding English. Maintain the original order and provide the translation in a clean JSON array of strings, with no other text or markdown.
+          text: `You are an expert manga translator. Translate the following Japanese (or any language besides english) text blocks into natural-sounding English. Maintain the original order and provide the translation in a clean JSON array of strings, with no other text or markdown.
 
                   Input (JSON Array):
                   ${JSON.stringify(texts)}
