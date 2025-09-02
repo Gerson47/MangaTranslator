@@ -87,13 +87,13 @@ export default function HomePage() {
     return { originalImage: imageBase64, translatedBlocks: finalTranslatedBlocks, originalWidth, originalHeight };
   };
 
-  const updatePageData = (index: number, data: Partial<PageData>) => {
-    setPagesData(currentData => {
-      const newData = [...currentData];
-      newData[index] = { ...newData[index], ...data };
-      return newData;
-    });
-  };
+  // const updatePageData = (index: number, data: Partial<PageData>) => {
+  //   setPagesData(currentData => {
+  //     const newData = [...currentData];
+  //     newData[index] = { ...newData[index], ...data };
+  //     return newData;
+  //   });
+  // };
 
 
  useEffect(() => {
@@ -196,18 +196,33 @@ const handleSubmit = async (e: React.FormEvent) => {
           <h1>Manga Translator</h1>
           <form onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="urlPattern">URL Pattern (use `{'{{i}}'}` for page number)</label>
-              <input id="urlPattern" type="text" value={urlInput} onChange={e => setUrlInput(e.target.value)} placeholder="e.g. https://site.com/manga/{{i}}.png" />
+              <label htmlFor="urlInput">Chapter URL or URL Pattern</label>
+              <input 
+                id="urlInput" 
+                type="text" 
+                value={urlInput} 
+                onChange={e => setUrlInput(e.target.value)} 
+                placeholder="Enter URL or pattern with {{i}}" 
+              />
             </div>
-            <div>
-              <label htmlFor="startPage">Start Page</label>
-              <input id="startPage" type="number" value={startPage} min="1" onChange={e => setStartPage(Number(e.target.value))} />
-            </div>
-            <div>
-              <label htmlFor="endPage">End Page</label>
-              <input id="endPage" type="number" value={endPage} min={startPage} onChange={e => setEndPage(Number(e.target.value))} />
-            </div>
-            <button type="submit">Load Chapter</button>
+
+            {/* Conditionally show page range inputs ONLY in pattern mode */}
+            {isPatternMode && (
+              <>
+                <div>
+                  <label htmlFor="startPage">Start Page</label>
+                  <input id="startPage" type="number" value={startPage} min="1" onChange={e => setStartPage(Number(e.target.value))} />
+                </div>
+                <div>
+                  <label htmlFor="endPage">End Page</label>
+                  <input id="endPage" type="number" value={endPage} min={startPage} onChange={e => setEndPage(Number(e.target.value))} />
+                </div>
+              </>
+            )}
+
+            <button type="submit" disabled={isLoadingChapter}>
+              {isLoadingChapter ? 'Loading Chapter...' : 'Load Chapter'}
+            </button>
           </form>
         </div>
       ) : (

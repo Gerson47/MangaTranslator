@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { 
+  GoogleGenerativeAI, 
+  HarmBlockThreshold,
+  HarmCategory, 
+} from '@google/generative-ai';
 
 // Initialize the Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
@@ -12,7 +16,50 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'A non-empty array of texts is required.' }, { status: 400 });
     }
     
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    const model = genAI.getGenerativeModel(
+      { 
+        model: "gemini-2.5-flash-lite", 
+
+      }
+    );
+
+    const contents = [
+    {
+      role: 'system',
+      parts: [
+        {
+          text: `You are an expert manga translator. Translate the following Japanese text blocks into natural-sounding English. Maintain the original order and provide the translation in a clean JSON array of strings, with no other text or markdown.
+
+                  Input (JSON Array):
+                  ${JSON.stringify(texts)}
+
+                  Output (JSON Array of translated strings):
+                  `,
+        },
+      ],
+    },
+  ];
+
+    const safetySettings = [
+      {
+        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,  // Block none
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold: HarmBlockThreshold.BLOCK_NONE,  // Block none
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,  // Block none
+      },
+      {
+        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,  // Block none
+      },
+    ];
+
+    
 
     const prompt = `You are an expert manga translator. Translate the following Japanese text blocks into natural-sounding English. Maintain the original order and provide the translation in a clean JSON array of strings, with no other text or markdown.
 
@@ -22,7 +69,10 @@ export async function POST(request: NextRequest) {
     Output (JSON Array of translated strings):
     `;
     
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent({
+      contents,
+      safetySettings,
+    });
     const response = await result.response;
     const responseText = response.text();
 
